@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<title>smol</title>
+<canvas id="c" height="300" width="300"></canvas>
+<button id="l">Left</button>
+<button id="r">Right</button>
+<script>
+    const c = document.getElementById("c");
+    const cx = c.getContext("2d");
+    const rows = 30;
+    const l = document.getElementById("l");
+    const r = document.getElementById("r");
+    var p = 1;
+    var e = [];
+    var eo = false;
+
+    l.onclick = function () {
+        p = Math.max(0, p - 1);
+        draw();
+    }
+
+    r.onclick = function () {
+        p = Math.min(2, p + 1);
+        draw();
+    }
+
+    function draw() {
+        
+        cx.clearRect(0, 0, c.width, c.height);
+        cx.fillStyle = "#00FF00";
+        cx.fillRect(p * 120, 250, 40,40);
+        cx.fillStyle = "#FF0000";
+        for (var i = 0; i < e.length; i++){
+            var le = e[i];
+            cx.fillRect(le.x * 120, le.y * 50, 40, 40);
+        }
+
+        isGameOver();
+    }
+
+    function isGameOver() {
+        for (var i = 0; i < e.length; i++){
+            var le = e[i];
+            if (le.x == p && le.y == 5) {
+                cx.font = "30px Arial";
+                cx.fillText("Game Over", 10, 50); 
+                clearInterval(speeder);
+                clearInterval(timer);
+                l.onclick = null;
+                r.onclick = null;
+            }
+        }
+    }
+
+    draw();
+    var speed = 1000;
+
+    function logic() {
+        eo = !eo;
+        if (eo){
+            e.push({
+                x: Math.floor(Math.random() * 3),
+                y: 0
+            })
+        }
+        for (var i = 0; i < e.length; i++){
+            var le = e[i];
+            le.y += 1;
+        }
+
+        draw();
+
+        for (var i = 0; i < e.length; i++){
+            var le = e[i];
+            if (le.y > 5) {
+                e.splice(i,1);
+            }
+        }
+    }
+
+    var timer = setInterval(logic, speed);
+
+    var speeder = setInterval(function () {
+        clearInterval(timer);
+        speed *= 0.8;
+        timer = setInterval(logic, speed);
+    }, 3000)
+</script>
